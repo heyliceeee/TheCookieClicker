@@ -35,6 +35,33 @@ def click_cookie():
     """
     cookie = driver.find_element(By.ID, "bigCookie") # find the cookie
     ActionChains(driver).click(cookie).perform() # Click the cookie
+def get_price(product):
+    """
+    Get the price of a product
+    :param product: item
+    :return: price as a float
+    """
+    try: # try to get the price
+        price_el = product.find_element(By.CLASS_NAME, "price") # Find the price element
+        price_text = price_el.text.replace(",", "") # Get the text content of the price element
+        return float(price_text) # Return the price as a float
+    except: # if the price is not found
+        return 999999999
+def purchase_items():
+    """
+    Purchase the most expensive item
+    """
+    cookies_text = driver.find_element(By.ID, "cookies").text.split(" ")[0] # Get the text content of the cookies element
+    cookies = float(cookies_text.replace(",", "")) # Convert the text content to a float
+    if cookies < 200: # if there are not enough cookies
+        return # stop looking for other products
+
+    products = driver.find_elements(By.CSS_SELECTOR,"#products .product.unlocked.enabled") # Find all the available products
+    if not products: # if there are no available products
+        return # stop looking for other products
+
+    products_sorted = sorted(products, key=get_price, reverse=True) # sort the products by price
+    products_sorted[0].click() # Click the most expensive product
 
 
 first_interaction = True # set the first interaction to true
@@ -45,3 +72,6 @@ while True: # keep the game running
         change_language() # select english option in "change language" pop-up
         first_interaction = False # set the first interaction to false
     click_cookie()  # click the cookie as fast as possible
+
+    if time.time() - last_purchase >= PURCHASE_INTERVAL:  # if it's time to buy an upgrade
+        purchase_items() # buy the cheapest upgrade
