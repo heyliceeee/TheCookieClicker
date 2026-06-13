@@ -29,6 +29,13 @@ def change_language():
 
     except TimeoutException: # if the language is already set to English
         print("Language already set to English")
+def click_cookie():
+    """
+    Click the cookie as fast as possible
+    """
+    cookie = driver.find_element(By.ID, "bigCookie") # find the cookie
+    ActionChains(driver).click(cookie).perform() # Click the cookie
+
 
 first_interaction = True # set the first interaction to true
 start_time = time.time() # get the start time
@@ -37,3 +44,4 @@ while True: # keep the game running
     if first_interaction: # if it's the first interaction
         change_language() # select english option in "change language" pop-up
         first_interaction = False # set the first interaction to false
+    click_cookie()  # click the cookie as fast as possible
