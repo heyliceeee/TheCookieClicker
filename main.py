@@ -23,9 +23,11 @@ def change_language():
     """
     try: # try to change the language
         wait.until(EC.presence_of_element_located((By.ID, "prompt"))) # Wait for the change language popup to appear
+        #print("Change language popup appeared")
 
         lang_select = wait.until(EC.element_to_be_clickable((By.ID, "langSelect-EN"))) # Wait for the language select button to be clickable
         lang_select.click() # Click the language select button
+        #print("Language changed to English")
 
     except TimeoutException: # if the language is already set to English
         print("Language already set to English")
@@ -77,9 +79,23 @@ while True: # keep the game running
     if first_interaction: # if it's the first interaction
         change_language() # select english option in "change language" pop-up
         first_interaction = False # set the first interaction to false
-    click_cookie()  # click the cookie as fast as possible
 
-    if time.time() - last_purchase >= PURCHASE_INTERVAL:  # if it's time to buy an upgrade
-        purchase_upgrades()  # buy all the upgrades
-        purchase_items()  # buy the cheapest upgrade
-        last_purchase = time.time()  # update the last purchase time
+    click_cookie() # click the cookie as fast as possible
+
+    if time.time() - last_purchase >= PURCHASE_INTERVAL: # if it's time to buy an upgrade
+        purchase_upgrades() # buy all the upgrades
+        purchase_items() # buy the cheapest upgrade
+        last_purchase = time.time() # update the last purchase time
+
+    elapsed = time.time() - start_time # get the elapsed time
+    if elapsed >= RUN_TIME: # if the game has run for 5 minutes
+        print(f"game has run for {RUN_TIME/60} minutes")
+        try: # try to read the cookies per second
+            cps_el = wait.until(EC.presence_of_element_located((By.ID, "cookiesPerSecond"))) # Wait for the cookies per second element to appear
+            cps_text = cps_el.get_attribute("textContent") # Get the text content of the cookies per second element
+            cps_value = float(cps_text.split(":")[1].strip().replace(",", ".")) # Split the text content and get the second number
+            print(f"Cookies Per Second: {cps_value}")
+            break
+
+        except Exception as e: # if the cookies per second element is not found
+            print("Could not read CPS:", e)
