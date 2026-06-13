@@ -62,7 +62,13 @@ def purchase_items():
 
     products_sorted = sorted(products, key=get_price, reverse=True) # sort the products by price
     products_sorted[0].click() # Click the most expensive product
-
+def purchase_upgrades():
+    """
+    Purchase all the upgrades
+    """
+    upgrades = driver.find_elements(By.CSS_SELECTOR, "#upgrades .upgrade.enabled") # Find all the upgrades
+    for up in upgrades: # loop through the upgrades
+        up.click() # Click the upgrade
 
 first_interaction = True # set the first interaction to true
 start_time = time.time() # get the start time
@@ -74,4 +80,6 @@ while True: # keep the game running
     click_cookie()  # click the cookie as fast as possible
 
     if time.time() - last_purchase >= PURCHASE_INTERVAL:  # if it's time to buy an upgrade
-        purchase_items() # buy the cheapest upgrade
+        purchase_upgrades()  # buy all the upgrades
+        purchase_items()  # buy the cheapest upgrade
+        last_purchase = time.time()  # update the last purchase time
